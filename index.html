@@ -231,6 +231,33 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
+        /* Filter Controls Styling */
+        .filter-controls {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+            animation: slideIn 0.5s ease;
+        }
+
+        .filter-controls .form-label {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .filter-controls .form-select {
+            border-radius: 8px;
+            border: 1px solid var(--light-gray);
+            padding: 0.75rem;
+            transition: var(--transition);
+        }
+
+        .filter-controls .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+        }
+
         /* Table Styling */
         .table {
             border-radius: var(--border-radius);
@@ -542,13 +569,36 @@
 
         <hr>
 
+        <div class="filter-controls">
+            <h4>Filter Transactions</h4>
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="filterType" class="form-label">Filter By</label>
+                    <select class="form-select" id="filterType">
+                        <option value="all">All Transactions</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                </div>
+                <div class="col-md-4" id="dateFilterContainer">
+                    <label for="dateFilter" class="form-label">Select Date</label>
+                    <input type="date" class="form-control" id="dateFilter">
+                </div>
+                <div class="col-md-4" id="monthFilterContainer" style="display: none;">
+                    <label for="monthFilter" class="form-label">Select Month</label>
+                    <input type="month" class="form-control" id="monthFilter">
+                </div>
+            </div>
+        </div>
+
         <h4>Transactions</h4>
         <div class="table-responsive">
             <table class="table table-striped mt-3" id="transactionTable">
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Date</th> <!-- Fixed: changed td to th -->
+                        <th>Date</th>
                         <th>Amount</th>
                         <th>Description</th>
                         <th>Type</th>
@@ -569,11 +619,19 @@
     <script>
         // Set default date to today
         document.getElementById('date').valueAsDate = new Date();
+        document.getElementById('dateFilter').valueAsDate = new Date();
+        document.getElementById('monthFilter').value = new Date().toISOString().slice(0, 7);
 
         let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+        let filteredTransactions = [...transactions];
 
         const form = document.getElementById("expenseForm");
         const tableBody = document.querySelector("#transactionTable tbody");
+        const filterType = document.getElementById("filterType");
+        const dateFilter = document.getElementById("dateFilter");
+        const monthFilter = document.getElementById("monthFilter");
+        const dateFilterContainer = document.getElementById("dateFilterContainer");
+        const monthFilterContainer = document.getElementById("monthFilterContainer");
 
         const totalIncomeEl = document.getElementById("total-income");
         const totalExpenseEl = document.getElementById("total-expense");
@@ -590,7 +648,7 @@
             console.log("Loading transactions from localStorage:", transactions);
             
             setTimeout(() => {
-                transactions.forEach(t => addTransactionToTable(t));
+                filterTransactions();
                 updateDashboard();
             }, 800);
         });
@@ -625,11 +683,8 @@
             localStorage.setItem("transactions", JSON.stringify(transactions));
             console.log("Saved to localStorage:", transaction);
 
-            // Add row to table with animation
-            addTransactionToTable(transaction);
-
-            // Update dashboard
-            updateDashboard();
+            // Apply current filter to see if new transaction should be shown
+            filterTransactions();
 
             // Show success message
             showToast("Transaction added successfully!", "success");
@@ -638,6 +693,64 @@
             form.reset();
             document.getElementById('date').valueAsDate = new Date();
         });
+
+        // Filter change event listeners
+        filterType.addEventListener("change", filterTransactions);
+        dateFilter.addEventListener("change", filterTransactions);
+        monthFilter.addEventListener("change", filterTransactions);
+
+        // Show/hide appropriate filter controls based on filter type
+        filterType.addEventListener("change", function() {
+            if (this.value === "monthly") {
+                dateFilterContainer.style.display = "none";
+                monthFilterContainer.style.display = "block";
+            } else {
+                dateFilterContainer.style.display = "block";
+                monthFilterContainer.style.display = "none";
+            }
+        });
+
+        function filterTransactions() {
+            const filterValue = filterType.value;
+            const selectedDate = dateFilter.value;
+            const selectedMonth = monthFilter.value;
+            
+            if (filterValue === "all") {
+                filteredTransactions = [...transactions];
+            } else if (filterValue === "daily") {
+                filteredTransactions = transactions.filter(t => t.date === selectedDate);
+            } else if (filterValue === "weekly") {
+                // Get the start and end of the week for the selected date
+                const date = new Date(selectedDate);
+                const startOfWeek = new Date(date);
+                startOfWeek.setDate(date.getDate() - date.getDay()); // Sunday
+                
+                const endOfWeek = new Date(date);
+                endOfWeek.setDate(date.getDate() + (6 - date.getDay())); // Saturday
+                
+                filteredTransactions = transactions.filter(t => {
+                    const transactionDate = new Date(t.date);
+                    return transactionDate >= startOfWeek && transactionDate <= endOfWeek;
+                });
+            } else if (filterValue === "monthly") {
+                filteredTransactions = transactions.filter(t => {
+                    const transactionMonth = t.date.substring(0, 7); // YYYY-MM
+                    return transactionMonth === selectedMonth;
+                });
+            }
+            
+            // Update the table with filtered transactions
+            updateTransactionTable();
+            updateDashboard();
+        }
+
+        function updateTransactionTable() {
+            // Clear the table
+            tableBody.innerHTML = '';
+            
+            // Add filtered transactions to the table
+            filteredTransactions.forEach(t => addTransactionToTable(t));
+        }
 
         function addTransactionToTable(transaction) {
             const row = document.createElement('tr');
@@ -674,6 +787,9 @@
                 localStorage.setItem('transactions', JSON.stringify(transactions));
                 console.log("Deleted from localStorage:", transaction);
                 
+                // Reapply filter
+                filterTransactions();
+                
                 // Remove row with animation
                 row.style.transition = 'all 0.5s ease';
                 row.style.opacity = '0';
@@ -690,7 +806,7 @@
             let income = 0;
             let expense = 0;
 
-            transactions.forEach(t => {
+            filteredTransactions.forEach(t => {
                 if (t.type === "income") {
                     income += t.amount;
                 } else {
