@@ -9,7 +9,432 @@
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border-radius: 10px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+            padding-bottom: 2rem;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            background: linear-gradient(to right,
+                    var(--primary),
+                    var(--secondary)) !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 0.8rem 1rem;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+            transition: var(--transition);
+        }
+
+        .navbar-brand:hover {
+            transform: translateY(-2px);
+        }
+
+        .navbar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-weight: 500;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link.active {
+            color: white !important;
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .navbar-nav .nav-link::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: white;
+            transition: width 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover::after,
+        .navbar-nav .nav-link.active::after {
+            width: 100%;
+        }
+
+        .navbar-toggler {
+            border: none;
+            color: white;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+
+        /* Dashboard Styling */
+        .dashboard {
+            animation: fadeIn 0.8s ease;
+        }
+
+        .card {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            overflow: hidden;
+            margin: 20px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border-bottom: none;
+            padding: 1.2rem;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Stats Cards */
+        .stats-card {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .stats-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.1) 0%,
+                    rgba(255, 255, 255, 0) 100%);
+        }
+
+        .stats-card:hover {
+            transform: scale(1.03);
+        }
+
+        #total-balance-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        #total-income-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        #total-expense-card {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .stats-card .card-title {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+
+        .stats-card .card-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .stats-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        /* Form Styling */
+        #expenseForm {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+            animation: slideIn 0.5s ease;
+        }
+
+        #expenseForm .form-label {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        #expenseForm .form-control,
+        #expenseForm .form-select {
+            border-radius: 8px;
+            border: 1px solid var(--light-gray);
+            padding: 0.75rem;
+            transition: var(--transition);
+        }
+
+        #expenseForm .form-control:focus,
+        #expenseForm .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Table Styling */
+        .table {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            animation: fadeIn 0.8s ease;
+        }
+
+        .table thead {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .table th {
+            border: none;
+            padding: 1rem;
+            font-weight: 600;
+        }
+
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .table tbody tr {
+            transition: var(--transition);
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+            transform: translateX(5px);
+        }
+
+        .text-success {
+            color: var(--success) !important;
+            font-weight: 600;
+        }
+
+        .text-danger {
+            color: var(--danger) !important;
+            font-weight: 600;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.3rem;
+            }
+
+            .stats-card .card-text {
+                font-size: 1.5rem;
+            }
+
+            .stats-icon {
+                font-size: 2rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .nav-item {
+                margin: 10px;
+            }
+
+            .dashboard .row>div {
+                margin-bottom: 15px;
+            }
+
+            .stats-card {
+                padding: 1rem;
+            }
+
+            .stats-card .card-text {
+                font-size: 1.3rem;
+            }
+
+            .table-responsive {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: slideInRight 0.5s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Section Headers */
+        h2 {
+            color: var(--dark);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        h2::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
+        h4 {
+            color: var(--dark);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        hr {
+            margin: 2rem 0;
+            border-top: 1px solid var(--light-gray);
+        }
+    </style>
 </head>
 
 <body>
@@ -25,10 +450,11 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item me-5">
-                    <a class="nav-link active" aria-current="page" href="index.html"><i class="fas fa-home me-1"></i>Home</a>
+                    <a class="nav-link active" aria-current="page" href="#"><i
+                            class="fas fa-home me-1"></i>Home</a>
                 </li>
                 <li class="nav-item me-5">
-                    <a class="nav-link" href="add.html"><i class="fas fa-plus-circle me-1"></i>Add Expense</a>
+                    <a class="nav-link" href="#"><i class="fas fa-plus-circle me-1"></i>Add Expense</a>
                 </li>
             </ul>
         </div>
@@ -87,10 +513,249 @@
         </div>
     </div>
 
+
+    <div class="container mt-5">
+        <h2 class="mb-4">Add New Transaction</h2>
+
+        <form id="expenseForm">
+            <div class="mb-3">
+                <label for="date" class="form-label">Date</label>
+                <input type="date" class="form-control" id="date" required>
+            </div>
+            <div class="mb-3">
+                <label for="amount" class="form-label">Amount</label>
+                <input type="number" class="form-control" id="amount" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <input type="text" class="form-control" id="description" required>
+            </div>
+            <div class="mb-3">
+                <label for="type" class="form-label">Type</label>
+                <select class="form-select" id="type" required>
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+        <hr>
+
+        <h4>Transactions</h4>
+        <div class="table-responsive">
+            <table class="table table-striped mt-3" id="transactionTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th> <!-- Fixed: changed td to th -->
+                        <th>Amount</th>
+                        <th>Description</th>
+                        <th>Type</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will appear here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
-    <script src="script.js""></script>
+    <script>
+        // Set default date to today
+        document.getElementById('date').valueAsDate = new Date();
+
+        let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+
+        const form = document.getElementById("expenseForm");
+        const tableBody = document.querySelector("#transactionTable tbody");
+
+        const totalIncomeEl = document.getElementById("total-income");
+        const totalExpenseEl = document.getElementById("total-expense");
+        const totalBalanceEl = document.getElementById("total-balance");
+
+        // Load transactions on page load
+        window.addEventListener("DOMContentLoaded", () => {
+            // Add loading animation
+            totalBalanceEl.innerHTML = '<span class="loading"></span>';
+            totalIncomeEl.innerHTML = '<span class="loading"></span>';
+            totalExpenseEl.innerHTML = '<span class="loading"></span>';
+
+            // Load from localStorage
+            console.log("Loading transactions from localStorage:", transactions);
+            
+            setTimeout(() => {
+                transactions.forEach(t => addTransactionToTable(t));
+                updateDashboard();
+            }, 800);
+        });
+
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            // Get form values
+            const date = document.getElementById("date").value;
+            const amount = parseFloat(document.getElementById("amount").value);
+            const description = document.getElementById("description").value;
+            const type = document.getElementById("type").value;
+
+            if (isNaN(amount) || amount <= 0) {
+                showToast("Please enter a valid amount", "error");
+                return;
+            }
+
+            // Create transaction object
+            const transaction = {
+                id: transactions.length > 0 ? Math.max(...transactions.map(t => t.id)) + 1 : 1,
+                date,
+                amount,
+                description,
+                type
+            };
+
+            // Add to array
+            transactions.push(transaction);
+
+            // Save to localStorage
+            localStorage.setItem("transactions", JSON.stringify(transactions));
+            console.log("Saved to localStorage:", transaction);
+
+            // Add row to table with animation
+            addTransactionToTable(transaction);
+
+            // Update dashboard
+            updateDashboard();
+
+            // Show success message
+            showToast("Transaction added successfully!", "success");
+
+            // Reset form and set date to today
+            form.reset();
+            document.getElementById('date').valueAsDate = new Date();
+        });
+
+        function addTransactionToTable(transaction) {
+            const row = document.createElement('tr');
+            row.style.opacity = '0';
+            row.style.transform = 'translateX(-20px)';
+
+            row.innerHTML = `
+                <td>${transaction.id}</td>
+                <td>${transaction.date}</td>
+                <td>$${transaction.amount.toFixed(2)}</td>
+                <td>${transaction.description}</td>
+                <td class="${transaction.type === 'income' ? 'text-success' : 'text-danger'}">
+                    ${transaction.type}
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-danger delete-btn">Delete</button>
+                </td>
+            `;
+
+            tableBody.appendChild(row);
+
+            // Animate the new row
+            setTimeout(() => {
+                row.style.transition = 'all 0.5s ease';
+                row.style.opacity = '1';
+                row.style.transform = 'translateX(0)';
+            }, 10);
+
+            const deleteBtn = row.querySelector('.delete-btn');
+            deleteBtn.addEventListener('click', () => {
+                // Remove from transactions array
+                transactions = transactions.filter(t => t.id !== transaction.id);
+                // Update localStorage
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+                console.log("Deleted from localStorage:", transaction);
+                
+                // Remove row with animation
+                row.style.transition = 'all 0.5s ease';
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(20px)';
+                setTimeout(() => {
+                    row.remove();
+                    updateDashboard();
+                    showToast('Transaction deleted!', 'success');
+                }, 500);
+            });
+        }
+
+        function updateDashboard() {
+            let income = 0;
+            let expense = 0;
+
+            transactions.forEach(t => {
+                if (t.type === "income") {
+                    income += t.amount;
+                } else {
+                    expense += t.amount;
+                }
+            });
+
+            const balance = income - expense;
+
+            // Animate the numbers
+            animateValue(totalIncomeEl, 0, income, 800, '$');
+            animateValue(totalExpenseEl, 0, expense, 800, '$');
+            animateValue(totalBalanceEl, 0, balance, 800, '$');
+
+            // Add pulse animation to balance card if balance is positive
+            const balanceCard = document.getElementById('total-balance-card');
+            if (balance > 0) {
+                balanceCard.classList.add('animate-pulse');
+            } else {
+                balanceCard.classList.remove('animate-pulse');
+            }
+        }
+
+        // Function to animate number counting up
+        function animateValue(element, start, end, duration, prefix = '') {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                element.textContent = prefix + value.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Toast notification function
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = 'toast p-3';
+            toast.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'} me-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.transition = 'all 0.5s ease';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 500);
+            }, 3000);
+        }
+    </script>
 </body>
 
 </html>
