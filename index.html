@@ -504,7 +504,7 @@
                                                 <i class="fas fa-wallet"></i>
                                             </div>
                                             <h5 class="card-title">Total Balance</h5>
-                                            <p class="card-text" id="total-balance">$0.00</p>
+                                            <p class="card-text" id="total-balance">₹0.00</p>
                                         </div>
                                     </div>
                                 </div>
@@ -517,7 +517,7 @@
                                                 <i class="fas fa-arrow-down"></i>
                                             </div>
                                             <h5 class="card-title">Total Income</h5>
-                                            <p class="card-text" id="total-income">$0.00</p>
+                                            <p class="card-text" id="total-income">₹0.00</p>
                                         </div>
                                     </div>
                                 </div>
@@ -528,7 +528,7 @@
                                                 <i class="fas fa-arrow-up"></i>
                                             </div>
                                             <h5 class="card-title">Total Expense</h5>
-                                            <p class="card-text" id="total-expense">$0.00</p>
+                                            <p class="card-text" id="total-expense">₹0.00</p>
                                         </div>
                                     </div>
                                 </div>
@@ -760,7 +760,7 @@
             row.innerHTML = `
                 <td>${transaction.id}</td>
                 <td>${transaction.date}</td>
-                <td>$${transaction.amount.toFixed(2)}</td>
+                <td>₹${transaction.amount.toFixed(2)}</td>
                 <td>${transaction.description}</td>
                 <td class="${transaction.type === 'income' ? 'text-success' : 'text-danger'}">
                     ${transaction.type}
@@ -817,9 +817,9 @@
             const balance = income - expense;
 
             // Animate the numbers
-            animateValue(totalIncomeEl, 0, income, 800, '$');
-            animateValue(totalExpenseEl, 0, expense, 800, '$');
-            animateValue(totalBalanceEl, 0, balance, 800, '$');
+            animateValue(totalIncomeEl, 0, income, 800, '₹');
+            animateValue(totalExpenseEl, 0, expense, 800, '₹');
+            animateValue(totalBalanceEl, 0, balance, 800, '₹');
 
             // Add pulse animation to balance card if balance is positive
             const balanceCard = document.getElementById('total-balance-card');
